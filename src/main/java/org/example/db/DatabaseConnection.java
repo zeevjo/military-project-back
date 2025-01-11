@@ -38,9 +38,6 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
     private static final Logger logger = LogManager.getLogger(DatabaseConnection.class);
-//    private static final String URL = "jdbc:postgresql://dpg-ctt7u3l2ng1s73c6i9c0-a.oregon-postgres.render.com:5432/postgsql_db";
-//    private static final String USER = "postgsql_db_user";
-//    private static final String PASSWORD = "LiVlOfh1WkjIKIw8kIZo62sk4wAQbx4z";
 
     private static final String URL = Properties.get("URL");
     private static final String USER = Properties.get("USER");
