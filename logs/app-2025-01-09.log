@@ -1,0 +1,73 @@
+2025-01-09 03:37:43 INFO  [main] org.example.MainServer - Server is running on http://localhost:8080
+2025-01-09 03:38:03 INFO  [main] org.example.MainServer - Server is running on http://localhost:8080
+2025-01-09 06:19:26 INFO  [main] org.example.MainServer - Server is running on http://localhost:8080
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.controllers.InventoryController - Received request to fetch item details
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.controllers.InventoryController - Fetching details for stock ID: 3
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.services.InventoryService - Fetching item details from repository for stock ID: 3
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.repositories.InventoryRepository - Fetching item details for stock ID: 3
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.repositories.InventoryRepository - Successfully retrieved item details for stock ID: 3
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.services.InventoryService - Successfully fetched item details for stock ID: 3
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.controllers.InventoryController - Sending response with status 200 and body: {"stockId":3,"productName":"5.56mm Rounds","productType":"Ammunition","currentStatus":"Available","armoryLocation":"Main Armory 2","isCurrentlyAssigned":"Yes","assignedTo":"Lisa Brown","assignmentDate":"2025-01-09 03:21:09"}
+2025-01-09 06:19:29 INFO  [pool-2-thread-2] org.example.controllers.InventoryController - Response sent successfully
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.controllers.InventoryController - Received request to fetch item details
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.controllers.InventoryController - Fetching details for stock ID: 1
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.services.InventoryService - Fetching item details from repository for stock ID: 1
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.repositories.InventoryRepository - Fetching item details for stock ID: 1
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.repositories.InventoryRepository - Successfully retrieved item details for stock ID: 1
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.services.InventoryService - Successfully fetched item details for stock ID: 1
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.controllers.InventoryController - Sending response with status 200 and body: {"stockId":1,"productName":"M16 Rifle","productType":"Weapon","currentStatus":"Available","armoryLocation":"Main Armory 1","isCurrentlyAssigned":"No"}
+2025-01-09 06:19:39 INFO  [pool-2-thread-3] org.example.controllers.InventoryController - Response sent successfully
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.controllers.InventoryController - Received request to fetch item details
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.controllers.InventoryController - Fetching details for stock ID: 2
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.services.InventoryService - Fetching item details from repository for stock ID: 2
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.repositories.InventoryRepository - Fetching item details for stock ID: 2
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.repositories.InventoryRepository - Successfully retrieved item details for stock ID: 2
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.services.InventoryService - Successfully fetched item details for stock ID: 2
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.controllers.InventoryController - Sending response with status 200 and body: {"stockId":2,"productName":"M4 Carbine","productType":"Weapon","currentStatus":"Available","armoryLocation":"Main Armory 1","isCurrentlyAssigned":"No"}
+2025-01-09 06:19:44 INFO  [pool-2-thread-4] org.example.controllers.InventoryController - Response sent successfully
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.controllers.InventoryController - Received request to fetch item details
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.controllers.InventoryController - Fetching details for stock ID: 3
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.services.InventoryService - Fetching item details from repository for stock ID: 3
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.repositories.InventoryRepository - Fetching item details for stock ID: 3
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.repositories.InventoryRepository - Successfully retrieved item details for stock ID: 3
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.services.InventoryService - Successfully fetched item details for stock ID: 3
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.controllers.InventoryController - Sending response with status 200 and body: {"stockId":3,"productName":"5.56mm Rounds","productType":"Ammunition","currentStatus":"Available","armoryLocation":"Main Armory 2","isCurrentlyAssigned":"Yes","assignedTo":"Lisa Brown","assignmentDate":"2025-01-09 03:21:09"}
+2025-01-09 06:19:47 INFO  [pool-2-thread-5] org.example.controllers.InventoryController - Response sent successfully
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.controllers.InventoryController - Received request to fetch item details
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.controllers.InventoryController - Fetching details for stock ID: 4
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.services.InventoryService - Fetching item details from repository for stock ID: 4
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.repositories.InventoryRepository - Fetching item details for stock ID: 4
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.repositories.InventoryRepository - Successfully retrieved item details for stock ID: 4
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.services.InventoryService - Successfully fetched item details for stock ID: 4
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.controllers.InventoryController - Sending response with status 200 and body: {"stockId":4,"productName":"Kevlar Vest","productType":"Gear","currentStatus":"Assigned","armoryLocation":"Main Armory 3","isCurrentlyAssigned":"Yes","assignedTo":"John Doe","assignmentDate":"2025-01-09 03:21:09"}
+2025-01-09 06:19:49 INFO  [pool-2-thread-6] org.example.controllers.InventoryController - Response sent successfully
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.controllers.InventoryController - Received request to fetch item details
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.controllers.InventoryController - Fetching details for stock ID: 5
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.services.InventoryService - Fetching item details from repository for stock ID: 5
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.repositories.InventoryRepository - Fetching item details for stock ID: 5
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.repositories.InventoryRepository - Successfully retrieved item details for stock ID: 5
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.services.InventoryService - Successfully fetched item details for stock ID: 5
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.controllers.InventoryController - Sending response with status 200 and body: {"stockId":5,"productName":"M16 Rifle","productType":"Weapon","currentStatus":"Assigned","armoryLocation":"Main Armory 1","isCurrentlyAssigned":"No"}
+2025-01-09 06:19:51 INFO  [pool-2-thread-7] org.example.controllers.InventoryController - Response sent successfully
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.controllers.InventoryController - Received request to fetch item details
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.controllers.InventoryController - Fetching details for stock ID: 5
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.services.InventoryService - Fetching item details from repository for stock ID: 5
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.repositories.InventoryRepository - Fetching item details for stock ID: 5
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.repositories.InventoryRepository - Successfully retrieved item details for stock ID: 5
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.services.InventoryService - Successfully fetched item details for stock ID: 5
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.controllers.InventoryController - Sending response with status 200 and body: {"stockId":5,"productName":"M16 Rifle","productType":"Weapon","currentStatus":"Assigned","armoryLocation":"Main Armory 1","isCurrentlyAssigned":"No"}
+2025-01-09 06:27:55 INFO  [pool-2-thread-9] org.example.controllers.InventoryController - Response sent successfully

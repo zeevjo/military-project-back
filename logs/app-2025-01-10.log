@@ -1,0 +1,17 @@
+2025-01-10 16:36:26 INFO  [main] org.example.MainServer - Server is running on http://localhost:8080
+2025-01-10 16:36:26 INFO  [pool-2-thread-2] org.example.controllers.LoginController - Received login request
+2025-01-10 16:36:26 INFO  [pool-2-thread-2] org.example.services.LoginService - Processing login request for user: admin
+2025-01-10 16:36:26 INFO  [pool-2-thread-2] org.example.repositories.LoginRepository - Attempting to log in user: admin
+2025-01-10 16:36:26 INFO  [pool-2-thread-2] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-10 16:36:27 INFO  [pool-2-thread-2] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-10 16:36:27 INFO  [pool-2-thread-2] org.example.services.LoginService - Login result for user admin: Invalid username or password
+2025-01-10 16:36:27 INFO  [pool-2-thread-2] org.example.controllers.LoginController - Sending response with status 200 and body: {"message":"Invalid username or password"}
+2025-01-10 16:36:27 INFO  [pool-2-thread-2] org.example.controllers.LoginController - Response sent successfully
+2025-01-10 16:36:36 INFO  [pool-2-thread-3] org.example.controllers.LoginController - Received login request
+2025-01-10 16:36:36 INFO  [pool-2-thread-3] org.example.services.LoginService - Processing login request for user: admin
+2025-01-10 16:36:36 INFO  [pool-2-thread-3] org.example.repositories.LoginRepository - Attempting to log in user: admin
+2025-01-10 16:36:36 INFO  [pool-2-thread-3] org.example.db.DatabaseConnection - Attempting to establish the DB
+2025-01-10 16:36:36 INFO  [pool-2-thread-3] org.example.db.DatabaseConnection - Database connection established successfully.
+2025-01-10 16:36:36 INFO  [pool-2-thread-3] org.example.services.LoginService - Login result for user admin: Login successful
+2025-01-10 16:36:36 INFO  [pool-2-thread-3] org.example.controllers.LoginController - Sending response with status 200 and body: {"message":"Login successful"}
+2025-01-10 16:36:36 INFO  [pool-2-thread-3] org.example.controllers.LoginController - Response sent successfully
