@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 public class LoginController {
@@ -32,21 +31,25 @@ public class LoginController {
             String username = requestMap.get("username");
             String password = requestMap.get("password");
 
+            if (username == null || username.isEmpty()) {
+                logger.warn("Validation failed: Username is missing or empty");
+                sendResponse(exchange, 400, gson.toJson(Map.of("error", "Username is required")));
+                return;
+            }
+            if (password == null || password.isEmpty()) {
+                logger.warn("Validation failed: Password is missing or empty");
+                sendResponse(exchange, 400, gson.toJson(Map.of("error", "Password is required")));
+                return;
+            }
+
             Map<String, Object> result = loginService.login(username, password);
 
-            // Send the response directly without wrapping the token field again
             sendResponse(exchange, 200, gson.toJson(result));
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid login request: {}", e.getMessage());
-            sendResponse(exchange, 400, gson.toJson(Map.of("error", e.getMessage())));
         } catch (Exception e) {
-            logger.error("Error processing login request: {}", e.getMessage(), e);
+            logger.error("Unexpected error during login: {}", e.getMessage(), e);
             sendResponse(exchange, 500, gson.toJson(Map.of("error", "Internal server error")));
         }
     }
-
-
-
 
     private String readRequestBody(HttpExchange exchange) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
@@ -72,14 +75,11 @@ public class LoginController {
             exchange.sendResponseHeaders(204, -1); // No content for preflight response
             return;
         }
-        // Add CORS headers for actual responses
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
 
-        // Set content type
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
-        // Send response
         exchange.sendResponseHeaders(statusCode, response.getBytes(StandardCharsets.UTF_8).length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response.getBytes(StandardCharsets.UTF_8));

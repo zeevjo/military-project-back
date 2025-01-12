@@ -24,10 +24,6 @@ public class LoginService {
     public Map<String, Object> login(String username, String password) {
         logger.info("Processing login request for user: {}", username);
 
-        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("Username or password cannot be null or empty");
-        }
-
         // Authenticate the user
         String result = loginRepository.loginUser(username, password);
         logger.info("Login result for user {}: {}", username, result);

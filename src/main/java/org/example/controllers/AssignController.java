@@ -76,14 +76,11 @@ public class AssignController {
             return;
         }
 
-        // Add CORS headers for actual responses
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
 
-        // Set content type
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
-        // Send response
         exchange.sendResponseHeaders(statusCode, response.getBytes(StandardCharsets.UTF_8).length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response.getBytes(StandardCharsets.UTF_8));
