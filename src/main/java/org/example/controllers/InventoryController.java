@@ -35,21 +35,6 @@ public class InventoryController {
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         logger.info("Sending response with status {} and body: {}", statusCode, response);
 
-        String requestMethod = exchange.getRequestMethod();
-        if ("OPTIONS".equalsIgnoreCase(requestMethod)) {
-            logger.info("Handling preflight OPTIONS request");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-            exchange.sendResponseHeaders(204, -1); // No content for preflight response
-            return;
-        }
-
-        // Add CORS headers for actual responses
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-
         // Set content type
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
@@ -86,20 +71,6 @@ public class InventoryController {
             logger.error("Error while fetching item details: {}", e.getMessage(), e);
             sendError(exchange, 500, e.getMessage());
         }
-    }
-
-
-    private String readRequestBody(HttpExchange exchange) throws IOException {
-        logger.debug("Reading request body");
-        StringBuilder requestBody = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                requestBody.append(line);
-            }
-        }
-        logger.debug("Request body read successfully");
-        return requestBody.toString();
     }
 
     private Map<String, String> parseQuery(String query) {

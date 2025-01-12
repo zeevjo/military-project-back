@@ -24,15 +24,12 @@ public class LoginService {
     public Map<String, Object> login(String username, String password) {
         logger.info("Processing login request for user: {}", username);
 
-        // Authenticate the user
         String result = loginRepository.loginUser(username, password);
         logger.info("Login result for user {}: {}", username, result);
 
-        // Prepare the response
         Map<String, Object> response = new HashMap<>();
 
         if ("Login successful".equalsIgnoreCase(result)) {
-            // Generate a JWT token if login is successful
             String token = generateJwtToken(username);
             logger.info("Generated JWT token for user {}: {}", username, token);
 
@@ -50,7 +47,6 @@ public class LoginService {
         return response;
     }
 
-
     private String generateJwtToken(String username) {
         long expirationTimeMillis = System.currentTimeMillis() + 9 * 60 * 60 * 1000;
         Date expirationDate = new Date(expirationTimeMillis);
@@ -62,6 +58,4 @@ public class LoginService {
                 .signWith(SECRET_KEY)
                 .compact();
     }
-
-
 }
