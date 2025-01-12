@@ -32,12 +32,10 @@ public class LoginController {
             String username = requestMap.get("username");
             String password = requestMap.get("password");
 
-            String result = loginService.login(username, password);
+            Map<String, Object> result = loginService.login(username, password);
 
-            Map<String, String> responseMap = new HashMap<>();
-            responseMap.put("message", result);
-
-            sendResponse(exchange, 200, gson.toJson(responseMap));
+            // Send the response directly without wrapping the token field again
+            sendResponse(exchange, 200, gson.toJson(result));
         } catch (IllegalArgumentException e) {
             logger.error("Invalid login request: {}", e.getMessage());
             sendResponse(exchange, 400, gson.toJson(Map.of("error", e.getMessage())));
@@ -46,6 +44,9 @@ public class LoginController {
             sendResponse(exchange, 500, gson.toJson(Map.of("error", "Internal server error")));
         }
     }
+
+
+
 
     private String readRequestBody(HttpExchange exchange) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
