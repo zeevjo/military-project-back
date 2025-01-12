@@ -130,44 +130,19 @@ public class UserController {
         return queryPairs;
     }
 
-//    private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
-//        logger.info("Sending response with status {} and body: {}", statusCode, response);
-//        exchange.getResponseHeaders().set("Content-Type", "application/json");
-//        exchange.sendResponseHeaders(statusCode, response.getBytes(StandardCharsets.UTF_8).length);
-//        try (OutputStream os = exchange.getResponseBody()) {
-//            os.write(response.getBytes(StandardCharsets.UTF_8));
-//        }
-//        logger.info("Response sent successfully");
-//    }
-private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
-    logger.info("Sending response with status {} and body: {}", statusCode, response);
+    private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
+        logger.info("Sending response with status {} and body: {}", statusCode, response);
 
-    String requestMethod = exchange.getRequestMethod();
-    if ("OPTIONS".equalsIgnoreCase(requestMethod)) {
-        logger.info("Handling preflight OPTIONS request");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-        exchange.sendResponseHeaders(204, -1); // No content for preflight response
-        return;
+        // Set content type
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+
+        // Send response
+        exchange.sendResponseHeaders(statusCode, response.getBytes(StandardCharsets.UTF_8).length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes(StandardCharsets.UTF_8));
+        }
+        logger.info("Response sent successfully");
     }
-
-
-    // Add CORS headers for actual responses
-    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-
-    // Set content type
-    exchange.getResponseHeaders().set("Content-Type", "application/json");
-
-    // Send response
-    exchange.sendResponseHeaders(statusCode, response.getBytes(StandardCharsets.UTF_8).length);
-    try (OutputStream os = exchange.getResponseBody()) {
-        os.write(response.getBytes(StandardCharsets.UTF_8));
-    }
-    logger.info("Response sent successfully");
-}
 
 
     private void sendError(HttpExchange exchange, int statusCode, String errorMessage) throws IOException {
