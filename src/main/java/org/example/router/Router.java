@@ -42,61 +42,133 @@ public class Router {
         routes.computeIfAbsent(path, k -> new HashMap<>()).put(method, handler);
     }
 
-    public void wrap(HttpServer server) {
-        routes.forEach((path, methods) -> server.createContext(path, exchange -> {
-            String method = exchange.getRequestMethod();
-            logger.info("Received {} request for path: {}", method, path);
+//    public void wrap(HttpServer server) {
+//        routes.forEach((path, methods) -> server.createContext(path, exchange -> {
+//            String method = exchange.getRequestMethod();
+//            logger.info("Received {} request for path: {}", method, path);
+//
+//            try {
+//                // Skip validation for login endpoint
+//                if (!"/api/login".equalsIgnoreCase(path)) {
+//                    String authorizationHeader = exchange.getRequestHeaders().getFirst("Authorization");
+//                    String apiKeyHeader = exchange.getRequestHeaders().getFirst("x-api-key");
+//
+//                    if (authorizationHeader == null && apiKeyHeader == null) {
+//                        logger.warn("Request missing both Authorization token and API key for path: {}", path);
+//                        sendCustomResponse(exchange, 400, "{\"error\": \"Missing Authorization token or API key\"}");
+//                        return;
+//                    }
+//
+//                    if (authorizationHeader != null && !validateJwt(authorizationHeader)) {
+//                        logger.warn("Invalid Authorization token for path: {}", path);
+//                        sendCustomResponse(exchange, 401, "{\"error\": \"Invalid Authorization token\"}");
+//                        return;
+//                    }
+//
+//                    if (apiKeyHeader != null && !validateJwt(apiKeyHeader)) {
+//                        logger.warn("Invalid API key for path: {}", path);
+//                        sendCustomResponse(exchange, 401, "{\"error\": \"Invalid API key\"}");
+//                        return;
+//                    }
+//
+//                    logger.info("Authorization validated successfully for path: {}", path);
+//                }
+//
+//                if ("OPTIONS".equalsIgnoreCase(method)) {
+//                    logger.debug("Handling OPTIONS request for path: {}", path);
+//                    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*"); // Allow all origins (or specify your origin)
+//                    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+//                    exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key");
+//                    exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
+//                    exchange.sendResponseHeaders(204, -1);
+//                } else {
+//                    // Add the same CORS headers to actual requests
+//                    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+//                    HttpHandlerWithMethod handler = methods.get(method);
+//                    if (handler != null) {
+//                        logger.info("Handler found for {} request on path: {}", method, path);
+//                        handler.handle(exchange);
+//                    } else {
+//                        logger.warn("No handler found for {} request on path: {}", method, path);
+//                        exchange.sendResponseHeaders(405, -1);
+//                    }
+//                }
+//
+//            } catch (Exception e) {
+//                logger.error("Error handling request for path: {} - {}", path, e.getMessage());
+//                sendCustomResponse(exchange, 500, "{\"error\": \"Internal Server Error\"}");
+//            }
+//        }));
+//    }
+public void wrap(HttpServer server) {
+    routes.forEach((path, methods) -> server.createContext(path, exchange -> {
+        String method = exchange.getRequestMethod();
+        logger.info("Received {} request for path: {}", method, path);
 
-            try {
-                // Skip validation for login endpoint
-                if (!"/api/login".equalsIgnoreCase(path)) {
-                    String authorizationHeader = exchange.getRequestHeaders().getFirst("Authorization");
-                    String apiKeyHeader = exchange.getRequestHeaders().getFirst("x-api-key");
-
-                    if (authorizationHeader == null && apiKeyHeader == null) {
-                        logger.warn("Request missing both Authorization token and API key for path: {}", path);
-                        sendCustomResponse(exchange, 400, "{\"error\": \"Missing Authorization token or API key\"}");
-                        return;
-                    }
-
-                    if (authorizationHeader != null && !validateJwt(authorizationHeader)) {
-                        logger.warn("Invalid Authorization token for path: {}", path);
-                        sendCustomResponse(exchange, 401, "{\"error\": \"Invalid Authorization token\"}");
-                        return;
-                    }
-
-                    if (apiKeyHeader != null && !validateJwt(apiKeyHeader)) {
-                        logger.warn("Invalid API key for path: {}", path);
-                        sendCustomResponse(exchange, 401, "{\"error\": \"Invalid API key\"}");
-                        return;
-                    }
-
-                    logger.info("Authorization validated successfully for path: {}", path);
-                }
-
-                if ("OPTIONS".equalsIgnoreCase(method)) {
-                    logger.debug("Handling OPTIONS request for path: {}", path);
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key");
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-                    exchange.sendResponseHeaders(204, -1);
-                } else {
-                    HttpHandlerWithMethod handler = methods.get(method);
-                    if (handler != null) {
-                        logger.info("Handler found for {} request on path: {}", method, path);
-                        handler.handle(exchange);
-                    } else {
-                        logger.warn("No handler found for {} request on path: {}", method, path);
-                        exchange.sendResponseHeaders(405, -1);
-                    }
-                }
-            } catch (Exception e) {
-                logger.error("Error handling request for path: {} - {}", path, e.getMessage());
-                sendCustomResponse(exchange, 500, "{\"error\": \"Internal Server Error\"}");
+        try {
+            // Handle OPTIONS requests for CORS
+            if ("OPTIONS".equalsIgnoreCase(method)) {
+                logger.debug("Handling OPTIONS request for path: {}", path);
+                setCorsHeaders(exchange);
+                exchange.sendResponseHeaders(204, -1);
+                exchange.close();
+                return;
             }
-        }));
+
+            // Set CORS headers once for all other requests
+            setCorsHeaders(exchange);
+
+            // Skip validation for login endpoint
+            if (!"/api/login".equalsIgnoreCase(path)) {
+                String authorizationHeader = exchange.getRequestHeaders().getFirst("Authorization");
+                String apiKeyHeader = exchange.getRequestHeaders().getFirst("x-api-key");
+
+                if (authorizationHeader == null && apiKeyHeader == null) {
+                    logger.warn("Request missing both Authorization token and API key for path: {}", path);
+                    sendCustomResponse(exchange, 400, "{\"error\": \"Missing Authorization token or API key\"}");
+                    return;
+                }
+
+                if (authorizationHeader != null && !validateJwt(authorizationHeader)) {
+                    logger.warn("Invalid Authorization token for path: {}", path);
+                    sendCustomResponse(exchange, 401, "{\"error\": \"Invalid Authorization token\"}");
+                    return;
+                }
+
+                if (apiKeyHeader != null && !validateJwt(apiKeyHeader)) {
+                    logger.warn("Invalid API key for path: {}", path);
+                    sendCustomResponse(exchange, 401, "{\"error\": \"Invalid API key\"}");
+                    return;
+                }
+
+                logger.info("Authorization validated successfully for path: {}", path);
+            }
+
+            HttpHandlerWithMethod handler = methods.get(method);
+            if (handler != null) {
+                logger.info("Handler found for {} request on path: {}", method, path);
+                handler.handle(exchange);
+            } else {
+                logger.warn("No handler found for {} request on path: {}", method, path);
+                exchange.sendResponseHeaders(405, -1);
+                exchange.close();
+            }
+
+        } catch (Exception e) {
+            logger.error("Error handling request for path: {} - {}", path, e.getMessage());
+            sendCustomResponse(exchange, 500, "{\"error\": \"Internal Server Error\"}");
+        }
+    }));
+}
+
+    private void setCorsHeaders(com.sun.net.httpserver.HttpExchange exchange) {
+        // Set each header only once
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Credentials", "true");
     }
+
 
     private boolean validateJwt(String header) {
         try {
