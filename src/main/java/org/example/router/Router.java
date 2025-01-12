@@ -253,59 +253,38 @@ public class Router {
             logger.info("Received {} request for path: {}", method, path);
 
             try {
-                // Clear any existing CORS headers to prevent duplicates
-                exchange.getResponseHeaders().remove("Access-Control-Allow-Origin");
-                exchange.getResponseHeaders().remove("Access-Control-Allow-Methods");
-                exchange.getResponseHeaders().remove("Access-Control-Allow-Headers");
-                exchange.getResponseHeaders().remove("Access-Control-Allow-Credentials");
+                // Clear existing CORS headers first
+                exchange.getResponseHeaders().clear();
 
-                // Set CORS headers once
+                // Set CORS headers
                 setCorsHeaders(exchange);
 
-                // Handle OPTIONS requests for CORS preflight
+                // Handle OPTIONS request
                 if ("OPTIONS".equalsIgnoreCase(method)) {
-                    logger.debug("Handling OPTIONS request for path: {}", path);
                     exchange.sendResponseHeaders(204, -1);
+                    exchange.close();
                     return;
                 }
 
-                // Rest of your existing authorization and request handling code...
+                // Handle authentication for non-login endpoints
                 if (!"/api/login".equalsIgnoreCase(path)) {
-                    String authorizationHeader = exchange.getRequestHeaders().getFirst("Authorization");
-                    String apiKeyHeader = exchange.getRequestHeaders().getFirst("x-api-key");
-
-                    if (authorizationHeader == null && apiKeyHeader == null) {
-                        logger.warn("Request missing both Authorization token and API key for path: {}", path);
-                        sendCustomResponse(exchange, 400, "{\"error\": \"Missing Authorization token or API key\"}");
+                    String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
+                    if (authHeader == null || !validateJwt(authHeader)) {
+                        sendCustomResponse(exchange, 401, "{\"error\": \"Invalid or missing authorization\"}");
                         return;
                     }
-
-                    if (authorizationHeader != null && !validateJwt(authorizationHeader)) {
-                        logger.warn("Invalid Authorization token for path: {}", path);
-                        sendCustomResponse(exchange, 401, "{\"error\": \"Invalid Authorization token\"}");
-                        return;
-                    }
-
-                    if (apiKeyHeader != null && !validateJwt(apiKeyHeader)) {
-                        logger.warn("Invalid API key for path: {}", path);
-                        sendCustomResponse(exchange, 401, "{\"error\": \"Invalid API key\"}");
-                        return;
-                    }
-
-                    logger.info("Authorization validated successfully for path: {}", path);
                 }
 
+                // Handle the actual request
                 HttpHandlerWithMethod handler = methods.get(method);
                 if (handler != null) {
-                    logger.info("Handler found for {} request on path: {}", method, path);
                     handler.handle(exchange);
                 } else {
-                    logger.warn("No handler found for {} request on path: {}", method, path);
                     exchange.sendResponseHeaders(405, -1);
                 }
 
             } catch (Exception e) {
-                logger.error("Error handling request for path: {} - {}", path, e.getMessage());
+                logger.error("Error handling request: {}", e.getMessage());
                 sendCustomResponse(exchange, 500, "{\"error\": \"Internal Server Error\"}");
             } finally {
                 exchange.close();
@@ -314,13 +293,12 @@ public class Router {
     }
 
     private void setCorsHeaders(com.sun.net.httpserver.HttpExchange exchange) {
-        // Set each header exactly once
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key");
+        exchange.getResponseHeaders().set("Access-Control-Max-Age", "3600");
         exchange.getResponseHeaders().set("Access-Control-Allow-Credentials", "true");
     }
-
 
     private boolean validateJwt(String header) {
         try {
