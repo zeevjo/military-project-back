@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.services.InventoryService;
+import org.example.utils.HttpUtils;
 
 
 import java.io.BufferedReader;
@@ -58,7 +59,7 @@ public class InventoryController {
     public void getItemDetails(HttpExchange exchange) throws IOException {
         logger.info("Received request to fetch item details");
         try {
-            Map<String, String> queryParams = parseQuery(exchange.getRequestURI().getQuery());
+            Map<String, String> queryParams = HttpUtils.parseQuery(logger, exchange.getRequestURI().getQuery());
             int stockId = Integer.parseInt(queryParams.get("id"));
             logger.info("Fetching details for stock ID: {}", stockId);
 
@@ -73,17 +74,4 @@ public class InventoryController {
         }
     }
 
-    private Map<String, String> parseQuery(String query) {
-        logger.debug("Parsing query: {}", query);
-        Map<String, String> queryPairs = new HashMap<>();
-        if (query != null && !query.isEmpty()) {
-            String[] pairs = query.split("&");
-            for (String pair : pairs) {
-                String[] keyValue = pair.split("=", 2); // Ensure split works even if '=' is missing
-                queryPairs.put(keyValue[0], keyValue.length > 1 ? keyValue[1] : "");
-            }
-        }
-        logger.debug("Parsed query parameters: {}", queryPairs);
-        return queryPairs;
-    }
 }

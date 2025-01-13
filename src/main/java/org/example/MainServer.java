@@ -2,6 +2,7 @@ package org.example;
 
 import com.sun.net.httpserver.HttpServer;
 import org.example.controllers.AssignController;
+import org.example.controllers.HistoryController;
 import org.example.controllers.InventoryController;
 import org.example.controllers.LoginController;
 import org.example.router.Router;
@@ -31,6 +32,7 @@ public class MainServer {
         InventoryController inventoryController = new InventoryController();
         LoginController loginController = new LoginController();
         StaticFileHandler staticFileHandler = new StaticFileHandler(WEB_SITE_PATH);
+        HistoryController  historyController = new HistoryController();
 
         Router router = new Router();
         router.get("/", staticFileHandler::handle);
@@ -40,6 +42,8 @@ public class MainServer {
         router.post("/api/login", loginController::login);
 
         router.post("/api/assign", assignController::assign);
+
+        router.get("/api/history", historyController::getHistory);
         router.wrap(server);
         logger.info("Server is running on {}:{}", BASE_URL, PORT);
         server.start();

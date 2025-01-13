@@ -1,6 +1,7 @@
 package org.example.utils;
 
 import com.sun.net.httpserver.HttpExchange;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -8,9 +9,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HttpUtils {
+
+    private static final Logger logger = LogManager.getLogger(HttpUtils.class);
 
     public static void sendResponse(Logger logger, HttpExchange exchange, int statusCode, String response, Map<String, String> headers) throws IOException {
         logger.info("Sending response with status {} and body: {}", statusCode, response);
@@ -39,5 +43,23 @@ public class HttpUtils {
             }
             return stringBuilder.toString();
         }
+    }
+
+    public static Map<String, String> parseQuery(Logger logger, String query) {
+        logger.debug("Parsing query: {}", query);
+
+        Map<String, String> queryPairs = new HashMap<>();
+        if (query != null && !query.isEmpty()) {
+            String[] pairs = query.split("&");
+            for (String pair : pairs) {
+                String[] keyValue = pair.split("=", 2); // split into at most 2 parts
+                String key = keyValue[0];
+                String value = keyValue.length > 1 ? keyValue[1] : "";
+                queryPairs.put(key, value);
+            }
+        }
+
+        logger.debug("Parsed query parameters: {}", queryPairs);
+        return queryPairs;
     }
 }
