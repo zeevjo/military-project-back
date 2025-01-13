@@ -245,9 +245,10 @@ INSERT INTO Product_Stock_Status_Log (Id, Product_Stock_Id, Previous_Status_Id, 
 
 -- Insert mock data into User
 INSERT INTO Users (Id, Username, Password, Created_At) VALUES
-(1, 'admin', 'admin123', NOW()),
-(2, 'officer', 'securepass', NOW()),
-(3, 'soldier1', 'soldier1pass', NOW());
+(1, 'admin@example.com', 'admin123', NOW()),
+(2, 'officer@example.com', 'securepass', NOW()),
+(3, 'soldier1@example.com', 'soldier1pass', NOW());
+
 
 -- Insert mock data into Role
 INSERT INTO Role (Id, Name, Created_At) VALUES
@@ -266,3 +267,6 @@ INSERT INTO Access_Level (Id, Role_Id, Battalion_Id, Company_Id, Platoon_Id, Cre
 (1, 1, NULL, NULL, NULL, NOW()), -- Admin: Full access
 (2, 2, 1, 1, NULL, NOW()),       -- Officer: Battalion 1, Alpha Company
 (3, 3, 1, 1, 1, NOW());          -- Soldier: Battalion 1, Alpha Company, 1st Platoon
+
+
+

@@ -84,7 +84,7 @@ CREATE TABLE Product_Assignment (
 
 CREATE TABLE Users (
   Id integer PRIMARY KEY AUTO_INCREMENT,
-  Username nvarchar(255),
+  Username nvarchar(255) unique,
   Password nvarchar(255) COMMENT 'Hashed password',
   Created_At timestamp
 );
@@ -94,6 +94,9 @@ CREATE TABLE Role (
   Name nvarchar(255) COMMENT 'Administrator, Company Admin, Platoon Admin, etc.',
   Created_At timestamp
 );
+
+
+
 
 CREATE TABLE User_Role (
   Id integer PRIMARY KEY AUTO_INCREMENT,
@@ -208,6 +211,8 @@ DELIMITER ;
 -----------------------------------------------------------------------------------
 DELIMITER $$
 
+DROP PROCEDURE IF EXISTS AssignProductToSoldier$$
+
 CREATE PROCEDURE AssignProductToSoldier(
     IN stockId INT,
     IN soldierId INT,
@@ -216,6 +221,7 @@ CREATE PROCEDURE AssignProductToSoldier(
 BEGIN
     DECLARE availableStatusId INT;
     DECLARE assignedStatusId INT;
+    DECLARE previousStatusId INT;
 
     -- Get the Status IDs for 'Available' and 'Assigned'
     SELECT Id INTO availableStatusId FROM Status WHERE Name = 'Available' LIMIT 1;
@@ -227,10 +233,31 @@ BEGIN
         FROM Product_Stock
         WHERE Id = stockId AND Status_Id = availableStatusId
     ) THEN
+        -- Get the current status of the product stock
+        SELECT Status_Id INTO previousStatusId
+        FROM Product_Stock
+        WHERE Id = stockId;
+
         -- Update the product stock status
         UPDATE Product_Stock
         SET Status_Id = assignedStatusId
         WHERE Id = stockId;
+
+        -- Log the status change in Product_Stock_Status_Log
+        INSERT INTO Product_Stock_Status_Log (
+            Product_Stock_Id,
+            Previous_Status_Id,
+            New_Status_Id,
+            Changed_At,
+            Changed_By
+        )
+        VALUES (
+            stockId,
+            previousStatusId,
+            assignedStatusId,
+            NOW(),
+            soldierId
+        );
 
         -- Insert the assignment record
         INSERT INTO Product_Assignment (Product_Stock_Id, Soldier_Id, Assigned_At)
@@ -247,25 +274,135 @@ DELIMITER ;
 ---------------------------------------------------------------------------------
 DELIMITER $$
 
+DROP PROCEDURE IF EXISTS Login$$
+
 CREATE PROCEDURE Login(
     IN inputUsername NVARCHAR(255),
     IN inputPassword NVARCHAR(255)
 )
 BEGIN
-    DECLARE userExists INT;
+    DECLARE userCount INT;
 
-    -- Check if a user exists with the given username and password
-    SELECT COUNT(*) INTO userExists
+    -- Check if exactly one user exists with the given username and password
+    SELECT COUNT(*) INTO userCount
     FROM Users
     WHERE Username = inputUsername AND Password = inputPassword;
 
-    -- Return appropriate message
-    IF userExists > 0 THEN
+    -- Return a descriptive message
+    IF userCount = 1 THEN
         SELECT 'Login successful' AS Message;
     ELSE
-        SELECT 'Invalid username or password' AS Message;
+        SELECT 'Login failed' AS Message;
     END IF;
 END$$
 
 DELIMITER ;
+---------------------------------------------------------------------------------
+DELIMITER $$
 
+DROP PROCEDURE IF EXISTS GetProductStockHistory$$
+
+CREATE PROCEDURE GetProductStockHistory()
+BEGIN
+    SELECT
+        P.Name AS Product_Name,
+        S.Name AS Current_Status,
+        CASE
+            WHEN S.Name = 'Available' THEN NULL
+            ELSE PSL.Changed_By
+        END AS Soldier_Id,
+        CASE
+            WHEN S.Name = 'Available' THEN NULL
+            ELSE SD.Name
+        END AS Soldier_Name,
+        PSL.Changed_At AS Modification_Date
+    FROM
+        Product_Stock_Status_Log PSL
+    INNER JOIN Product_Stock PS
+        ON PSL.Product_Stock_Id = PS.Id
+    INNER JOIN Product P
+        ON PS.Product_Id = P.Id
+    INNER JOIN Status S
+        ON PSL.New_Status_Id = S.Id
+    LEFT JOIN Soldier SD
+        ON PSL.Changed_By = SD.Id
+    ORDER BY
+        PSL.Changed_At DESC;
+END$$
+
+DELIMITER ;
+------------------------------------------------------------------------------------
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS update_product_status$$
+
+CREATE PROCEDURE update_product_status
+(
+    IN p_product_stock_id INT,  -- The Product_Stock Id you want to repair
+    IN p_new_status_id    INT,  -- The new status Id (e.g., 'UnderRepair' or 'Available')
+    IN p_changed_by       INT   -- The soldier Id making this change
+)
+BEGIN
+    DECLARE v_previous_status_id INT;
+
+    -- 1) Fetch the current (previous) status of the product stock
+    SELECT Status_Id
+      INTO v_previous_status_id
+      FROM Product_Stock
+     WHERE Id = p_product_stock_id;
+
+    -- 2) Log this status change in the Product_Stock_Status_Log table
+    INSERT INTO Product_Stock_Status_Log
+    (
+      Product_Stock_Id,
+      Previous_Status_Id,
+      New_Status_Id,
+      Changed_At,
+      Changed_By
+    )
+    VALUES
+    (
+      p_product_stock_id,
+      v_previous_status_id,
+      p_new_status_id,
+      NOW(),
+      p_changed_by
+    );
+
+    -- 3) Update the product stock's status to the new status
+    UPDATE Product_Stock
+       SET Status_Id = p_new_status_id
+     WHERE Id = p_product_stock_id;
+
+END $$
+
+DELIMITER ;
+
+----------------------------------------------------------------------------------------
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS GetProductFullTableByName$$
+CREATE PROCEDURE GetProductFullTableByName(
+    IN productName NVARCHAR(255)
+)
+BEGIN
+    SELECT
+        P.Name                   AS Product_Name,
+        S.Name                   AS Current_Status,
+        PSL.Changed_At           AS Last_Modified,
+        SD.Name                  AS Modified_By_Soldier
+    FROM Product P
+         LEFT JOIN Product_Stock PS
+                ON P.Id = PS.Product_Id
+         LEFT JOIN Status S
+                ON PS.Status_Id = S.Id
+         LEFT JOIN Product_Stock_Status_Log PSL
+                ON PS.Id = PSL.Product_Stock_Id
+         LEFT JOIN Soldier SD
+                ON PSL.Changed_By = SD.Id
+    WHERE P.Name = productName
+    ORDER BY PSL.Changed_At DESC;
+END$$
+
+DELIMITER ;

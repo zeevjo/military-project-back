@@ -39,5 +39,3 @@ build/
 
 logs/
 .idea/
-
-resources/config.properties
