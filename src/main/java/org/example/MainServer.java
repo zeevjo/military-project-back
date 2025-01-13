@@ -1,16 +1,14 @@
 package org.example;
 
 import com.sun.net.httpserver.HttpServer;
-import org.example.controllers.AssignController;
-import org.example.controllers.HistoryController;
-import org.example.controllers.InventoryController;
-import org.example.controllers.LoginController;
+import org.example.controllers.*;
 import org.example.router.Router;
 import org.example.utils.Properties;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,18 +30,20 @@ public class MainServer {
         InventoryController inventoryController = new InventoryController();
         LoginController loginController = new LoginController();
         StaticFileHandler staticFileHandler = new StaticFileHandler(WEB_SITE_PATH);
-        HistoryController  historyController = new HistoryController();
+        HistoryController historyController = new HistoryController();
+        ProductFullTableController productFullTableController = new ProductFullTableController();
 
         Router router = new Router();
         router.get("/", staticFileHandler::handle);
 
         router.get("/api/stock", inventoryController::getAllInventory);
-        router.get("/api/stock/item",inventoryController::getItemDetails);
+        router.get("/api/stock/item", inventoryController::getItemDetails);
         router.post("/api/login", loginController::login);
-
+        router.get("/api/stock/item/table", productFullTableController::getProductFullTableByName);
         router.post("/api/assign", assignController::assign);
 
         router.get("/api/history", historyController::getHistory);
+
         router.wrap(server);
         logger.info("Server is running on {}:{}", BASE_URL, PORT);
         server.start();
