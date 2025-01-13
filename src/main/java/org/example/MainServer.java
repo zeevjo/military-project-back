@@ -32,6 +32,7 @@ public class MainServer {
         StaticFileHandler staticFileHandler = new StaticFileHandler(WEB_SITE_PATH);
         HistoryController historyController = new HistoryController();
         ProductFullTableController productFullTableController = new ProductFullTableController();
+        UpdateProductStatusController updateProductStatusController = new UpdateProductStatusController();
 
         Router router = new Router();
         router.get("/", staticFileHandler::handle);
@@ -41,6 +42,8 @@ public class MainServer {
         router.post("/api/login", loginController::login);
         router.get("/api/stock/item/table", productFullTableController::getProductFullTableByName);
         router.post("/api/assign", assignController::assign);
+        router.post("/api/stock/status", updateProductStatusController::updateStatus);
+
 
         router.get("/api/history", historyController::getHistory);
 
